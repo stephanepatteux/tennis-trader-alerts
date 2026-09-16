@@ -2,6 +2,9 @@
 
 ## Running locally
 
+Beginner walkthrough (BotFather, Ultra key, `.env`, `/start`): see
+[Try it yourself (beginner)](../README.md#try-it-yourself-beginner) in the README.
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
