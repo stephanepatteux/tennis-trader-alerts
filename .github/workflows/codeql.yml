@@ -13,6 +13,9 @@ permissions:
 
 jobs:
   analyze:
+    # Public repos get code scanning for free. Private repos need GitHub
+    # Advanced Security enabled; without it the upload step fails the check.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions:
       security-events: write

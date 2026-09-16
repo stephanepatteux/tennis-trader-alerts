@@ -125,6 +125,10 @@ Suggested repository **About** (set in GitHub Settings → General):
 - Topics: `tennis`, `telegram-bot`, `betfair`, `tennis-trading`, `livetennisapi`, `websocket`, `break-point`, `in-play`, `python`, `sports-betting`
 - Homepage: this GitHub repo, or your hosted notes.
 
+CodeQL runs only while the repository is **public** (or when GitHub Advanced
+Security / code scanning is enabled on a private repo). Otherwise the analyze
+job is skipped so CI stays green.
+
 ## Cloud Agent environment
 
 Defined in [`.cursor/environment.json`](../.cursor/environment.json): idempotent
