@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "chat_id": "YOUR_TELEGRAM_CHAT_ID",
+      "enabled": true,
+      "name": "default",
+      "triggers": ["0-40", "15-40", "30-40", "break-point", "deuce", "tiebreak"],
+      "tours": [],
+      "surfaces": [],
+      "watchlist": []
+    }
+  ]
+}

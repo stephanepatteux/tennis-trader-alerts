@@ -1,0 +1,2 @@
+# Ultra WebSocket push feed (Live Tennis API Ultra key required at runtime).
+websocket-client==1.9.2

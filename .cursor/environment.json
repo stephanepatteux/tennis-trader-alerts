@@ -1,0 +1,11 @@
+{
+  "name": "Tennis Trader Alerts",
+  "install": "bash scripts/cloud-install.sh",
+  "terminals": [
+    {
+      "name": "worker",
+      "command": "source .venv/bin/activate && python -m app --dry-run",
+      "description": "Tennis Trader Alerts worker. Needs LIVE_TENNIS_API_KEY (Ultra) and TELEGRAM_CHAT_ID in .env; --dry-run logs alerts instead of calling Telegram."
+    }
+  ]
+}
