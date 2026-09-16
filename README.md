@@ -28,6 +28,7 @@ on a second screen. Scores are informational — **not tips**.
 - [What to expect](#what-to-expect)
 - [Why an Ultra key is required](#why-an-ultra-key-is-required-for-real-time-push)
 - [Features](#features)
+- [What you need](#what-you-need-nothing-is-bundled)
 - [Quick start](#quick-start)
 - [Bot menu](#bot-menu)
 - [Configuration](#configuration)
@@ -119,31 +120,76 @@ Bot API methods. Neither is committed to this repo.
 - **Rising-edge de-dup** and **per-chat rate limiting**.
 - Telegram Bot API `sendMessage` (HTML). `--dry-run` logs the same text.
 
+## What you need (nothing is bundled)
+
+This repository is **code only**. It does **not** include a Live Tennis API key
+or a Telegram bot token — not even a sample. You bring both:
+
+| You need | Cost | How |
+| -------- | ---- | --- |
+| **This code** | Free | Clone the repo. |
+| **Live Tennis API Ultra key** | Paid (Ultra plan) | Buy with code **`botblog`**: **[Subscribe to Ultra](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**. Lower plans cannot open the push feed. |
+| **Telegram bot token** | Free | Talk to [@BotFather](https://t.me/BotFather) → `/newbot` → copy the token. |
+
+Put both values in a local `.env` on **your** machine. Never commit that file.
+
 ## Quick start
 
+**1. Create the Telegram bot**
+
+In Telegram, open [@BotFather](https://t.me/BotFather), send `/newbot`, and copy
+the token it gives you (looks like `123456:ABC…`).
+
+**2. Buy an Ultra key**
+
+Open **[this affiliate link](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**
+and use code **`botblog`**. Copy the API key from your Live Tennis API dashboard.
+
+**3. Install and configure**
+
 ```bash
+git clone https://github.com/stephanepatteux/tennis-trader-alerts.git
+cd tennis-trader-alerts
+
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 
 cp .env.example .env
-# set LIVE_TENNIS_API_KEY (Ultra) and TELEGRAM_BOT_TOKEN
-
-python -m app                 # live alerts + bot menu
-pytest                        # unit tests (no keys required)
 ```
 
-1. Create a bot with [@BotFather](https://t.me/BotFather) → put the token in
-   `TELEGRAM_BOT_TOKEN`.
-2. Subscribe to Ultra with code **`botblog`**:
-   **[Get an Ultra key](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**.
-3. Put the Ultra key in `LIVE_TENNIS_API_KEY`.
-4. Run `python -m app`, then message your bot **`/start`**. Use the menu to
-   pick 0–40 / 15–40 / … and any tour, surface or player filters.
+Open `.env` in a text editor and paste your two secrets (no quotes):
 
-`python -m app --dry-run` still needs the Ultra key (to consume the feed) and
-logs alerts instead of sending them. If a bot token is set, the menu still
-talks to Telegram.
+```
+LIVE_TENNIS_API_KEY=paste_your_ultra_key_here
+TELEGRAM_BOT_TOKEN=paste_your_botfather_token_here
+```
+
+Optional but recommended — lock the bot to you so strangers cannot `/start` and
+burn your Ultra quota. Message [@userinfobot](https://t.me/userinfobot), copy
+your numeric **Id**, and set:
+
+```
+TELEGRAM_ALLOWED_CHATS=123456789
+```
+
+**4. Run it and open the menu**
+
+```bash
+python -m app
+```
+
+Leave that terminal open. In Telegram, search for **your** bot (the name you
+gave BotFather), tap **Start** or send `/start`. Use the buttons to pick
+0–40 / 15–40 / any break point / deuce / tiebreak, and optional tour, surface,
+or player filters.
+
+If `.env` was missing a key, the process exits with a clear error. Fix `.env`
+and run `python -m app` again.
+
+`python -m app --dry-run` still needs the Ultra key (it must consume the live
+feed) but **logs** alerts instead of sending them. Tests need no keys:
+`pytest`.
 
 ## Bot menu
 

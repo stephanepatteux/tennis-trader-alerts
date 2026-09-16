@@ -121,9 +121,12 @@ Without keys the container exits `2`. Never bake keys into the image.
 
 Suggested repository **About** (set in GitHub Settings → General):
 
-- Description: `Instant Telegram alerts for tennis break points (0–40 / 15–40). Self-hosted Live Tennis API Ultra WebSocket worker for Betfair in-play traders. Not tips.`
-- Topics: `tennis`, `telegram-bot`, `betfair`, `tennis-trading`, `livetennisapi`, `websocket`, `break-point`, `in-play`, `python`, `sports-betting`
-- Homepage: this GitHub repo, or your hosted notes.
+- Description: `Instant Telegram alerts for live tennis break points (0–40 / 15–40). Self-hosted Live Tennis API Ultra WebSocket worker for Betfair in-play traders. Not tips.`
+- Homepage: `https://affiliates.livetennisapi.com/r/botblog`
+- Topics: `tennis`, `telegram-bot` (or `telegrambot`), `betfair`, `betfair-trading`, `tennis-trading`, `livetennisapi`, `websocket`, `break-point`, `in-play`, `live-score`, `python`, `sports-betting`, `sports-data`, `trading-toolkit`
+
+The listing is filled in. Make the repository **public** (Settings → General →
+Change visibility) so people can clone the code without receiving any API key.
 
 CodeQL runs only while the repository is **public** (or when GitHub Advanced
 Security / code scanning is enabled on a private repo). Otherwise the analyze
