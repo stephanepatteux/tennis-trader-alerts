@@ -35,7 +35,7 @@ on a second screen. Scores are informational — **not tips**.
 - [Why an Ultra key is required](#why-an-ultra-key-is-required-for-real-time-push)
 - [Features](#features)
 - [What you need](#what-you-need-nothing-is-bundled)
-- [Quick start](#quick-start)
+- [Try it yourself (beginner)](#try-it-yourself-beginner)
 - [Bot menu](#bot-menu)
 - [Configuration](#configuration)
 - [Deploy](#deploy)
@@ -139,64 +139,113 @@ or a Telegram bot token — not even a sample. You bring both:
 
 Put both values in a local `.env` on **your** machine. Never commit that file.
 
-## Quick start
+## Try it yourself (beginner)
 
-**1. Create the Telegram bot**
+You run this on **your** computer. This repo is code only — you buy your own
+Ultra key and create your own Telegram bot. Nothing is hosted for you.
 
-In Telegram, open [@BotFather](https://t.me/BotFather), send `/newbot`, and copy
-the token it gives you (looks like `123456:ABC…`).
+**You will need**
 
-**2. Buy an Ultra key (10% off with code `botblog`)**
+- A computer with [Python 3.12+](https://www.python.org/downloads/) and git
+- The Telegram app on your phone (or desktop)
+- A Live Tennis API **Ultra** key (**10% off** with code **`botblog`**)
+
+### Step 1 — Create your Telegram bot (free)
+
+1. Open Telegram and search for **`@BotFather`** (the official one, with a blue tick).
+2. Tap **Start**, then send `/newbot`.
+3. Pick a display name, e.g. `Tennis Trader Alerts`.
+4. Pick a username ending in `bot`, e.g. `my_tennis_alerts_bot`.
+5. BotFather replies with a token that looks like `123456789:AAH...`. **Copy it**
+   and keep it private. That is `TELEGRAM_BOT_TOKEN`.
+
+### Step 2 — Buy an Ultra key (10% off with code `botblog`)
 
 1. Open **[this affiliate link](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**.
-2. At checkout, enter promo code **`botblog`** — that is **10% off** the Ultra plan.
-3. Copy the API key from your Live Tennis API dashboard.
+2. Choose the **Ultra** plan (lower plans cannot open the live push feed).
+3. At checkout, enter promo code **`botblog`** — that is **10% off**.
+4. After you subscribe, copy the API key from the Live Tennis API dashboard.
+   That is `LIVE_TENNIS_API_KEY`. Never paste it into GitHub or chat.
 
-**3. Install and configure**
+### Step 3 — Download the code and install Python packages
+
+Open a terminal (macOS/Linux: Terminal; Windows: PowerShell) and run:
 
 ```bash
 git clone https://github.com/stephanepatteux/tennis-trader-alerts.git
 cd tennis-trader-alerts
 
 python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
-
-cp .env.example .env
 ```
 
-Open `.env` in a text editor and paste your two secrets (no quotes):
+If `python3` is not found, try `python` instead. If Windows blocks the
+activate script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+once, then activate again.
+
+### Step 4 — Put your two keys in `.env`
+
+```bash
+cp .env.example .env               # Windows: copy .env.example .env
+```
+
+Open the new `.env` file in any text editor. Fill **only** these two lines
+(no quotes, no spaces around `=`):
 
 ```
 LIVE_TENNIS_API_KEY=paste_your_ultra_key_here
 TELEGRAM_BOT_TOKEN=paste_your_botfather_token_here
 ```
 
-Optional but recommended — lock the bot to you so strangers cannot `/start` and
-burn your Ultra quota. Message [@userinfobot](https://t.me/userinfobot), copy
-your numeric **Id**, and set:
+Save the file. Do **not** commit it — git already ignores `.env`.
+
+**Recommended:** lock the bot to you so strangers cannot `/start` and share
+your Ultra quota. In Telegram, message [@userinfobot](https://t.me/userinfobot),
+copy your numeric **Id**, and add this line to `.env`:
 
 ```
 TELEGRAM_ALLOWED_CHATS=123456789
 ```
 
-**4. Run it and open the menu**
+### Step 5 — Start the worker
+
+In the same terminal (venv still active):
 
 ```bash
 python -m app
 ```
 
-Leave that terminal open. In Telegram, search for **your** bot (the name you
-gave BotFather), tap **Start** or send `/start`. Use the buttons to pick
-0–40 / 15–40 / any break point / deuce / tiebreak, and optional tour, surface,
-or player filters.
+**Leave that window open.** You should see a log line like
+`Connected source=ultra users=0 bot=on` (and `Telegram bot menu started`).
+If a key is missing or the Ultra token is rejected, it prints a clear error
+and exits — fix `.env` and run `python -m app` again.
 
-If `.env` was missing a key, the process exits with a clear error. Fix `.env`
-and run `python -m app` again.
+### Step 6 — Talk to your bot
+
+1. In Telegram, search for the **username you gave BotFather** (not this GitHub repo).
+2. Tap **Start**, or send `/start`.
+3. You get a keyboard (**⚙️ Menu**, **Status**, **Pause**, **Resume**) and an
+   inline settings panel. Turn on **0–40** and **15–40** to start.
+4. Leave the bot running. When a live ATP/WTA game actually hits that score,
+   Telegram pings you. The menu works immediately; alerts wait for a real
+   break point on the live feed.
+
+To stop the worker: click the terminal and press `Ctrl+C`.
 
 `python -m app --dry-run` still needs the Ultra key (it must consume the live
-feed) but **logs** alerts instead of sending them. Tests need no keys:
-`pytest`.
+feed) but **logs** alerts in the terminal instead of sending them. Tests need
+no keys: `pytest`.
+
+### If something goes wrong
+
+| What you see | What to do |
+| ------------ | ---------- |
+| `LIVE_TENNIS_API_KEY is required` | `.env` is missing or the key line is empty. Save the file in the project folder, then run `python -m app` again. |
+| `TELEGRAM_BOT_TOKEN is required` | Same — paste the BotFather token with no quotes. |
+| HTTP 401/403 on `/ws-token` | That key is not Ultra (or is wrong). Buy Ultra and use code **`botblog`** for 10% off. |
+| Bot does not reply to `/start` | The worker is not running, or you messaged a different bot. Check the terminal is still open. |
+| `python3: command not found` | Install Python 3.12+ and retry, or use `python`. |
 
 ## Bot menu
 
