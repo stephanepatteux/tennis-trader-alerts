@@ -3,6 +3,7 @@
 [![CI](https://github.com/stephanepatteux/tennis-trader-alerts/actions/workflows/ci.yml/badge.svg)](https://github.com/stephanepatteux/tennis-trader-alerts/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![10% off Ultra — code botblog](https://img.shields.io/badge/Ultra-10%25%20off%20with%20code%20botblog-2ea44f)](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)
 
 A self-hosted **Telegram alerter for Betfair tennis traders**. It watches live
 ATP &amp; WTA matches over the **Live Tennis API Ultra WebSocket** and pings your
@@ -16,9 +17,14 @@ on a second screen. Scores are informational — **not tips**.
 ![Example Tennis Trader Alerts Telegram message: 0–40 triple break point, WTA Indian Wells, Swiatek vs Sabalenka, points 40–0](docs/images/telegram-alert.svg)
 
 > ## ⚡ Real-time push requires a Live Tennis API **Ultra** key
-> The point-by-point push feed is an **Ultra-only** capability. Get an Ultra key
-> here (affiliate link) and use code **`botblog`** for 10% off:
-> **[Subscribe to Ultra](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**.
+>
+> **You get 10% off Ultra with code `botblog`.**
+> Checkout: enter **`botblog`** (one word, lowercase) and the Ultra plan is
+> **10% cheaper**. Then paste your key into `.env`.
+>
+> **[Subscribe to Ultra — 10% off with code botblog](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**
+>
+> The point-by-point push feed is **Ultra-only**. Lower plans cannot open it.
 > _[Why Ultra is required](#why-an-ultra-key-is-required-for-real-time-push) ·
 > [Affiliate disclosure](#affiliate-disclosure)._
 
@@ -91,8 +97,8 @@ setting we can toggle.
 There is **no polling fallback**. Without an Ultra key the process exits and
 tells you why. Add an
 [Ultra key](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)
-(code `botblog`) and it connects to the Ultra WebSocket and alerts on real
-matches, point by point.
+(**10% off** with code **`botblog`**) and it connects to the Ultra WebSocket
+and alerts on real matches, point by point.
 
 > **No API key ships with this project.** This repository contains **no key at
 > all** — not even a hidden or example one. You buy your own Live Tennis API
@@ -128,7 +134,7 @@ or a Telegram bot token — not even a sample. You bring both:
 | You need | Cost | How |
 | -------- | ---- | --- |
 | **This code** | Free | Clone the repo. |
-| **Live Tennis API Ultra key** | Paid (Ultra plan) | Buy with code **`botblog`**: **[Subscribe to Ultra](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**. Lower plans cannot open the push feed. |
+| **Live Tennis API Ultra key** | Paid (Ultra plan) | **[Subscribe to Ultra](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)** and enter code **`botblog`** at checkout for **10% off**. Lower plans cannot open the push feed. |
 | **Telegram bot token** | Free | Talk to [@BotFather](https://t.me/BotFather) → `/newbot` → copy the token. |
 
 Put both values in a local `.env` on **your** machine. Never commit that file.
@@ -140,10 +146,11 @@ Put both values in a local `.env` on **your** machine. Never commit that file.
 In Telegram, open [@BotFather](https://t.me/BotFather), send `/newbot`, and copy
 the token it gives you (looks like `123456:ABC…`).
 
-**2. Buy an Ultra key**
+**2. Buy an Ultra key (10% off with code `botblog`)**
 
-Open **[this affiliate link](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**
-and use code **`botblog`**. Copy the API key from your Live Tennis API dashboard.
+1. Open **[this affiliate link](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**.
+2. At checkout, enter promo code **`botblog`** — that is **10% off** the Ultra plan.
+3. Copy the API key from your Live Tennis API dashboard.
 
 **3. Install and configure**
 
@@ -277,7 +284,8 @@ point-by-point Ultra push so the ping can beat the market move.
 
 **Do I need an API key?** Yes — a
 **[Live Tennis API Ultra](https://affiliates.livetennisapi.com/r/botblog?utm_campaign=live-tennis-ultra&utm_medium=tennis-alerts&utm_source=github)**
-key (use code `botblog`; the push feed is Ultra-only) plus a Telegram bot token.
+key. Enter code **`botblog`** at checkout for **10% off**. The push feed is
+Ultra-only. You also need a free Telegram bot token from @BotFather.
 See [Why Ultra is required](#why-an-ultra-key-is-required-for-real-time-push).
 
 **Why not just poll every few seconds?** Polling misses the exact moment a
@@ -298,9 +306,9 @@ row in `data/rules.json`. Lock extras with `TELEGRAM_ALLOWED_CHATS`.
 ## Affiliate disclosure
 
 Links to Live Tennis API on this page are affiliate links: if you subscribe
-through them (optionally with code `botblog`), this project may earn a
-commission at no extra cost to you. You can also sign up directly at
-[livetennisapi.com](https://livetennisapi.com).
+through them, this project may earn a commission at no extra cost to you.
+**Promo code `botblog` is 10% off the Ultra plan** at checkout. You can also
+sign up directly at [livetennisapi.com](https://livetennisapi.com).
 
 ## License
 
