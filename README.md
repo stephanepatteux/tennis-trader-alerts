@@ -91,8 +91,9 @@ Bot API `sendMessage`. Neither is committed to this repo.
 - Local alert detection — same codes as the board: `0–40`, `15–40`, `30–40`,
   any break point, deuce, tiebreak. Computed here so filters mean the same thing
   on live data.
-- **Per-user rules**: each Telegram chat chooses triggers and optional
-  tour / surface / player-watchlist filters. JSON file, reload-on-change.
+- **In-bot menu**: `/start` or tap **⚙️ Menu** to toggle triggers, tour, surface,
+  player watchlist, and pause/resume. Settings are saved to `data/rules.json`.
+- **Per-user rules** can also be edited as JSON (reload-on-change).
 - **Rising-edge de-dup**: a 15–40 that sits for three points is one Telegram
   message, not three. The same break point can fire again after it clears.
 - **Per-chat rate limiting** so a busy slate cannot flood a phone.
@@ -107,17 +108,16 @@ pip install -r requirements-dev.txt
 
 cp .env.example .env
 # set LIVE_TENNIS_API_KEY (Ultra) and TELEGRAM_BOT_TOKEN
-# set TELEGRAM_CHAT_ID, or copy data/rules.example.json → data/rules.json
 
-python -m app                 # live alerts
+python -m app                 # live alerts + bot menu
 python -m app --dry-run       # log messages, do not call Telegram
 pytest                        # unit tests (no keys required)
 ```
 
 1. Create a Telegram bot with [@BotFather](https://t.me/BotFather) and put the
    token in `TELEGRAM_BOT_TOKEN`.
-2. Message your bot, then put your numeric chat id in `TELEGRAM_CHAT_ID` (or in
-   `data/rules.json`).
+2. Start the worker, then message your bot **`/start`**. The menu is how you
+   pick triggers and filters (you do not need to put a chat id in `.env`).
 3. Subscribe to Ultra with code **`botblog`**:
    [https://affiliates.livetennisapi.com/r/botblog](https://affiliates.livetennisapi.com/r/botblog).
 
@@ -132,7 +132,8 @@ All configuration is via environment variables — see
 | `LIVE_TENNIS_API_BASE`    | `https://api.livetennisapi.com/api/public/v1` | API base URL (`/ws-token` is minted from here). |
 | `LIVE_TENNIS_API_TIMEOUT` | `10`                                          | Token-mint / connect timeout (seconds). |
 | `TELEGRAM_BOT_TOKEN`      | _(required unless `--dry-run`)_               | Telegram bot token from @BotFather. |
-| `TELEGRAM_CHAT_ID`        | _(or use `data/rules.json`)_                  | Default chat when no rules file is present. |
+| `TELEGRAM_CHAT_ID`        | _(optional)_                                  | Seed one chat if nobody has /start-ed yet. |
+| `TELEGRAM_ALLOWED_CHATS`  | _(anyone)_                                    | Comma-separated chat ids allowed to use the menu. |
 | `RULES_PATH`              | `data/rules.json`                             | Per-user rules JSON. |
 | `ALERT_TRIGGERS`          | all of `0-40,15-40,30-40,break-point,deuce,tiebreak` | Env bootstrap triggers. |
 | `ALERT_TOURS`             | _(all)_                                       | e.g. `atp` or `wta`. |
@@ -170,12 +171,32 @@ Copy [`data/rules.example.json`](data/rules.example.json) to `data/rules.json`
   fires when a match *enters* a break-point state, not on every subsequent
   15–40 / 30–40 tick.
 - Empty `tours` / `surfaces` / `watchlist` = no filter.
+- Empty `triggers` = nothing fires (every trigger turned off in the menu).
 - Edit the file while the worker is running; it reloads on change.
+  The bot menu writes this file for you.
+
+## Bot menu
+
+After `/start`, Telegram shows a persistent keyboard (**⚙️ Menu**, **Status**,
+**Pause**, **Resume**) and an inline settings panel:
+
+- Toggle **0–40 / 15–40 / 30–40 / Any BP / Deuce / Tiebreak**
+- Filter **ATP / WTA** and **Clay / Hard / Grass** (all-on = no filter)
+- **➕ Player** to add a watchlist name; tap **✕ name** to remove
+- **Pause / Resume** without wiping filters
+
+Commands: `/menu` `/status` `/on` `/off` `/help`. The same commands appear in
+Telegram's bot command list (`setMyCommands`).
 
 ## FAQ
 
 **Is this a Betfair betting bot?** No. It is a **read-only alerter**. It never
 places bets.
+
+**How do I choose which alerts I get?** Message the bot `/start` (or tap
+**⚙️ Menu**). Toggle 0–40 / 15–40 / 30–40 / any break point / deuce / tiebreak,
+filter ATP/WTA and clay/hard/grass, and add players to a watchlist. `/off`
+pauses; `/on` resumes.
 
 **Do I need an API key?** Yes — a
 **[Live Tennis API Ultra](https://affiliates.livetennisapi.com/r/botblog)** key

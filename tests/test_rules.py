@@ -3,11 +3,8 @@
 import json
 from pathlib import Path
 
-import pytest
-
-from app.config import ConfigError
 from app.matches import build_match
-from app.rules import RulesStore, UserRule
+from app.rules import DEFAULT_TRIGGERS, RulesStore, UserRule
 
 
 def _match(**kwargs):
@@ -106,8 +103,9 @@ def test_rules_store_env_bootstrap(monkeypatch, tmp_path: Path):
     monkeypatch.delenv("TELEGRAM_CHAT_ID", raising=False)
     missing = tmp_path / "missing.json"
     monkeypatch.setenv("RULES_PATH", str(missing))
-    with pytest.raises(ConfigError, match="TELEGRAM_CHAT_ID"):
-        RulesStore.load(missing)
+    empty = RulesStore.load(missing)
+    assert empty.users() == []
+    assert empty.path == missing
 
     monkeypatch.setenv("TELEGRAM_CHAT_ID", "999")
     monkeypatch.setenv("ALERT_TRIGGERS", "deuce,tiebreak")
@@ -135,3 +133,19 @@ def test_maybe_reload_picks_up_file_change(tmp_path: Path):
     os.utime(path, (time.time() + 5, time.time() + 5))
     assert store.maybe_reload() is True
     assert store.users()[0].triggers == ["0-40"]
+
+
+def test_omitted_triggers_default_to_all(tmp_path: Path):
+    path = tmp_path / "rules.json"
+    path.write_text(json.dumps({"users": [{"chat_id": "1"}]}), encoding="utf-8")
+    assert RulesStore.load(path).users()[0].triggers == list(DEFAULT_TRIGGERS)
+
+
+def test_empty_triggers_mean_none(tmp_path: Path):
+    path = tmp_path / "rules.json"
+    path.write_text(
+        json.dumps({"users": [{"chat_id": "1", "triggers": []}]}), encoding="utf-8"
+    )
+    user = RulesStore.load(path).users()[0]
+    assert user.triggers == []
+    assert user.matching_triggers(frozenset(), frozenset({"deuce"})) == []

@@ -17,7 +17,7 @@ pytest
   must stay in lockstep with `app/scoring/alerts.py` (ported from the Tennis
   Trader Board).
 - Add or update tests for alert detection, rising-edge de-dup, rules filters,
-  and notifier formatting.
+  notifier formatting, and the Telegram bot menu.
 - Update the README / `docs/OPERATIONS.md` if you change env vars or data flow.
 
 By contributing you agree that your contributions are licensed under the

@@ -6,17 +6,13 @@ path — it is never logged or written to disk.
 
 from __future__ import annotations
 
-import json
 import logging
-import urllib.error
-import urllib.request
 
 from .rules import BP_CODES
 from .scoring.alerts import CODE_LABEL, CODE_PRIORITY
+from .telegram import DEFAULT_API_BASE, TelegramApi
 
 log = logging.getLogger(__name__)
-
-DEFAULT_API_BASE = "https://api.telegram.org"
 
 
 def html_escape(text) -> str:
@@ -95,50 +91,21 @@ def format_alert(match: dict, triggers: list[str]) -> str:
 
 
 class TelegramNotifier:
-    def __init__(self, token: str, api_base: str = DEFAULT_API_BASE, timeout: float = 10.0):
-        if not token:
-            raise ValueError("TELEGRAM_BOT_TOKEN is empty")
-        self.token = token
-        self.api_base = api_base.rstrip("/")
-        self.timeout = timeout
+    def __init__(
+        self,
+        token: str | None = None,
+        api_base: str = DEFAULT_API_BASE,
+        timeout: float = 10.0,
+        api: TelegramApi | None = None,
+    ):
+        self.api = api or TelegramApi(token or "", api_base=api_base, timeout=timeout)
 
     def format_alert(self, match: dict, triggers: list[str]) -> str:
         return format_alert(match, triggers)
 
     def send(self, chat_id, text: str, parse_mode: str = "HTML") -> dict:
         """POST sendMessage. Returns the Bot API JSON body. Does not log the token."""
-        url = f"{self.api_base}/bot{self.token}/sendMessage"
-        payload = {
-            "chat_id": chat_id,
-            "text": text,
-            "parse_mode": parse_mode,
-            "disable_web_page_preview": True,
-        }
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-                "User-Agent": "tennis-trader-alerts/1.0",
-            },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace") if exc.fp else ""
-            log.warning(
-                "Telegram sendMessage failed chat_id=%s http=%s body=%s",
-                chat_id,
-                exc.code,
-                detail[:300],
-            )
-            raise
-        if not body.get("ok"):
-            log.warning("Telegram sendMessage rejected chat_id=%s desc=%s", chat_id, body.get("description"))
-            raise RuntimeError(body.get("description") or "telegram sendMessage not ok")
-        return body
+        return self.api.send_message(chat_id, text, parse_mode=parse_mode)
 
 
 class LogNotifier:
