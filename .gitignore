@@ -5,6 +5,8 @@
 
 # Local per-user rules (example file is tracked)
 data/rules.json
+data/*.tmp
+*.tmp
 
 # Python
 __pycache__/

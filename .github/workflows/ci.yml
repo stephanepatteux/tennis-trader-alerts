@@ -27,3 +27,22 @@ jobs:
 
       - name: Run tests
         run: pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t tennis-trader-alerts .
+
+      - name: Smoke test (no keys → clean ConfigError exit)
+        run: |
+          set +e
+          docker run --rm --name tta tennis-trader-alerts
+          code=$?
+          set -e
+          if [ "$code" != "2" ]; then
+            echo "expected exit 2 (missing Ultra key), got $code"
+            exit 1
+          fi

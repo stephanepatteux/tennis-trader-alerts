@@ -1,6 +1,7 @@
 """Telegram Bot API client.
 
-The bot token is used only in the URL path and is never logged.
+The bot token is used only in the URL path and is never logged. HTTP errors are
+re-raised without the request URL so a stack trace cannot leak the token.
 """
 
 from __future__ import annotations
@@ -45,10 +46,11 @@ class TelegramApi:
             if "message is not modified" in detail.lower():
                 return {"ok": True, "result": {}, "description": "message is not modified"}
             log.warning("Telegram %s failed http=%s body=%s", method, exc.code, detail[:300])
-            raise
+            raise RuntimeError(f"Telegram {method} HTTP {exc.code}") from None
+        except urllib.error.URLError:
+            raise RuntimeError(f"Telegram {method} network error") from None
         if not data.get("ok"):
             desc = data.get("description") or f"telegram {method} not ok"
-            # Harmless when the user taps the same button twice.
             if "message is not modified" in str(desc).lower():
                 return data
             log.warning("Telegram %s rejected desc=%s", method, desc)
@@ -101,7 +103,11 @@ class TelegramApi:
         # Long-poll: HTTP timeout must exceed Telegram's timeout.
         data = self.call(
             "getUpdates",
-            {"offset": offset, "timeout": timeout, "allowed_updates": ["message", "callback_query"]},
+            {
+                "offset": offset,
+                "timeout": timeout,
+                "allowed_updates": ["message", "callback_query"],
+            },
             timeout=float(timeout) + 5.0,
         )
         return list(data.get("result") or [])

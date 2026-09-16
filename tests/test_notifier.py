@@ -1,7 +1,8 @@
 """Tests for Telegram notifier formatting and sendMessage (mocked HTTP)."""
 
+import io
 import json
-from unittest import mock
+import urllib.error
 
 import pytest
 
@@ -114,3 +115,21 @@ def test_send_raises_when_telegram_returns_not_ok(monkeypatch):
     notifier = TelegramNotifier(token="TEST_TOKEN")
     with pytest.raises(RuntimeError, match="Forbidden"):
         notifier.send("1", "hello")
+
+
+def test_http_error_does_not_leak_bot_token(monkeypatch):
+    def boom(req, timeout=None):
+        raise urllib.error.HTTPError(
+            req.full_url,
+            401,
+            "Unauthorized",
+            hdrs=None,
+            fp=io.BytesIO(b'{"ok":false,"description":"Unauthorized"}'),
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", boom)
+    notifier = TelegramNotifier(token="SUPER_SECRET_TOKEN")
+    with pytest.raises(RuntimeError, match="HTTP 401") as caught:
+        notifier.send("1", "hello")
+    assert "SUPER_SECRET_TOKEN" not in str(caught.value)
+    assert "SUPER_SECRET_TOKEN" not in repr(caught.value)

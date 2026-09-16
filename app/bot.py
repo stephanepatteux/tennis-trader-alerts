@@ -24,6 +24,9 @@ BOT_COMMANDS = [
     {"command": "help", "description": "How alerts and filters work"},
 ]
 
+MAX_WATCHLIST = 20
+MAX_PLAYER_LEN = 40
+
 TRIGGER_BUTTONS = (
     ("0-40", "0–40"),
     ("15-40", "15–40"),
@@ -162,10 +165,10 @@ class BotMenu:
         while not self._stop.is_set():
             try:
                 updates = self.api.get_updates(offset=self._offset, timeout=30)
-            except Exception:
+            except Exception as exc:
                 if self._stop.is_set():
                     return
-                log.exception("getUpdates failed")
+                log.warning("getUpdates failed: %s", type(exc).__name__)
                 self._stop.wait(3.0)
                 continue
             for update in updates:
@@ -178,9 +181,12 @@ class BotMenu:
                     log.exception("Failed to handle Telegram update")
 
     def allowed_chat(self, chat_id) -> bool:
+        key = str(chat_id).strip()
+        if self.rules.get(key) is not None:
+            return True
         if not self.allowed:
             return True
-        return str(chat_id).strip() in self.allowed
+        return key in self.allowed
 
     def handle_update(self, update: dict) -> None:
         if update.get("callback_query"):
@@ -250,9 +256,11 @@ class BotMenu:
         data = str(query.get("data") or "")
         qid = query.get("id")
         message = query.get("message") or {}
-        chat_id = (message.get("chat") or {}).get("id")
-        message_id = message.get("message_id")
         from_user = query.get("from") or {}
+        chat_id = (message.get("chat") or {}).get("id")
+        if chat_id is None:
+            chat_id = from_user.get("id")
+        message_id = message.get("message_id")
         if chat_id is None:
             if qid:
                 self.api.answer_callback_query(qid)
@@ -336,16 +344,25 @@ class BotMenu:
         return ""
 
     def _add_player(self, chat_id, raw: str) -> None:
-        name = (raw or "").strip()
+        name = (raw or "").strip()[:MAX_PLAYER_LEN]
         self._pending.pop(str(chat_id), None)
         if not name or name.startswith("/"):
             self.api.send_message(chat_id, "No player added.", reply_markup=REPLY_KEYBOARD)
             return
 
-        def _add(user, n=name):
-            existing = {w.lower() for w in user.watchlist}
+        user = self.rules.get_or_create(chat_id)
+        if len(user.watchlist) >= MAX_WATCHLIST:
+            self.api.send_message(
+                chat_id,
+                f"Watchlist is full ({MAX_WATCHLIST}). Remove a name first.",
+                reply_markup=REPLY_KEYBOARD,
+            )
+            return
+
+        def _add(u, n=name):
+            existing = {w.lower() for w in u.watchlist}
             if n.lower() not in existing:
-                user.watchlist.append(n)
+                u.watchlist.append(n)
 
         user = self.rules.mutate(chat_id, _add)
         self.api.send_message(

@@ -86,7 +86,7 @@ Each user:
 Keys are read from the environment server-side. They are never committed
 (`.env` is git-ignored; `.env.example` documents every variable). The Ultra key
 is sent to Live Tennis API as a request header; the Telegram token is used only
-to call `sendMessage`. Logs include `chat_id` and `match_id`, not tokens.
+to call Bot API methods. Logs include `chat_id` and `match_id`, not tokens.
 
 ## State model
 
@@ -94,6 +94,36 @@ No database. Hub state, rising-edge memory, and rate-limit windows are
 in-memory, so restarting the process resets them. Alert **rules** persist in
 `data/rules.json` (written by the bot menu). No historical score backfill is
 required (or possible) — alerts are live-only.
+
+## Deploy
+
+One long-lived process: Ultra WebSocket thread + Telegram `getUpdates` thread.
+Set keys in the host environment.
+
+```bash
+python -m app
+```
+
+### Docker
+
+```bash
+docker build -t tennis-trader-alerts .
+docker run --rm \
+  -e LIVE_TENNIS_API_KEY \
+  -e TELEGRAM_BOT_TOKEN \
+  -v tta-data:/app/data \
+  tennis-trader-alerts
+```
+
+Without keys the container exits `2`. Never bake keys into the image.
+
+## GitHub listing
+
+Suggested repository **About** (set in GitHub Settings → General):
+
+- Description: `Instant Telegram alerts for tennis break points (0–40 / 15–40). Self-hosted Live Tennis API Ultra WebSocket worker for Betfair in-play traders. Not tips.`
+- Topics: `tennis`, `telegram-bot`, `betfair`, `tennis-trading`, `livetennisapi`, `websocket`, `break-point`, `in-play`, `python`, `sports-betting`
+- Homepage: this GitHub repo, or your hosted notes.
 
 ## Cloud Agent environment
 

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Tennis Trader Board (companion scoreboard)
+    url: https://github.com/stephanepatteux/live-tennis-scoreboard
+    about: Second-screen live tennis scoreboard for the same Ultra feed.
+  - name: Live Tennis API (Ultra key)
+    url: https://affiliates.livetennisapi.com/r/botblog
+    about: Get an Ultra key for real point-by-point push (code botblog).

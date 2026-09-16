@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from app.bot import BotMenu, format_status, menu_keyboard
+from app.bot import MAX_WATCHLIST, BotMenu, format_status, menu_keyboard
 from app.rules import RulesStore, UserRule, toggle_subset
 
 
@@ -175,3 +175,37 @@ def test_toggle_subset_empty_means_all():
     assert toggle_subset([], "atp", ("atp", "wta")) == ["wta"]
     assert toggle_subset(["wta"], "atp", ("atp", "wta")) == []
     assert toggle_subset(["hard"], "clay", ("clay", "hard", "grass")) == ["clay", "hard"]
+
+
+def test_existing_user_bypasses_allowlist(tmp_path: Path):
+    bot, api, store = _bot(tmp_path, allowed=["99"])
+    store.get_or_create("1")
+    bot.handle_update(_msg(1, "/menu"))
+    assert any("Alert settings" in m["text"] for m in api.sent)
+
+
+def test_callback_falls_back_to_from_id(tmp_path: Path):
+    bot, api, store = _bot(tmp_path)
+    store.get_or_create("5")
+    bot.handle_update(
+        {
+            "callback_query": {
+                "id": "q",
+                "data": "tg:deuce",
+                "from": {"id": 5, "username": "alice"},
+                "message": {"message_id": 9},
+            }
+        }
+    )
+    assert "deuce" not in store.get("5").triggers
+
+
+def test_watchlist_rejects_when_full(tmp_path: Path):
+    bot, api, store = _bot(tmp_path)
+    user = store.get_or_create("1")
+    user.watchlist = [f"P{i}" for i in range(MAX_WATCHLIST)]
+    store.save()
+    bot.handle_update(_cb(1, "wl+"))
+    bot.handle_update(_msg(1, "Extra"))
+    assert "Extra" not in store.get("1").watchlist
+    assert any("full" in m["text"].lower() for m in api.sent)

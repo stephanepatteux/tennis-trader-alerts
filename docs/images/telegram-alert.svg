@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="title desc">
+  <title id="title">Telegram 040 break-point alert</title>
+  <desc id="desc">Example Tennis Trader Alerts message: 040 triple break point, WTA Indian Wells, Swiatek vs Sabalenka, points 400.</desc>
+  <rect width="720" height="420" rx="24" fill="#0f1419"/>
+  <rect x="48" y="36" width="624" height="348" rx="20" fill="#1b232d"/>
+  <circle cx="84" cy="80" r="18" fill="#c8f542"/>
+  <text x="84" y="86" text-anchor="middle" font-size="18" font-family="ui-sans-serif, system-ui, sans-serif"><¾</text>
+  <text x="114" y="74" fill="#f4f7fb" font-size="18" font-weight="700" font-family="ui-sans-serif, system-ui, sans-serif">040 · triple break point</text>
+  <text x="114" y="98" fill="#8b98a5" font-size="14" font-family="ui-sans-serif, system-ui, sans-serif">WTA · Indian Wells · Hard</text>
+  <text x="72" y="148" fill="#f4f7fb" font-size="20" font-weight="700" font-family="ui-sans-serif, system-ui, sans-serif">Iga Swiatek vs Aryna Sabalenka</text>
+  <text x="72" y="186" fill="#c9d4de" font-size="16" font-family="ui-sans-serif, system-ui, sans-serif">Sets 10 · Games 34 · 400</text>
+  <text x="72" y="214" fill="#8b98a5" font-size="15" font-family="ui-sans-serif, system-ui, sans-serif">Serving: Aryna Sabalenka</text>
+  <rect x="72" y="246" width="140" height="36" rx="18" fill="#c8f542"/>
+  <text x="142" y="270" text-anchor="middle" fill="#111" font-size="14" font-weight="700" font-family="ui-sans-serif, system-ui, sans-serif">LIVE · Ultra push</text>
+  <text x="72" y="328" fill="#6b7782" font-size="13" font-family="ui-sans-serif, system-ui, sans-serif">Point-by-point · no polling · not a tip</text>
+</svg>

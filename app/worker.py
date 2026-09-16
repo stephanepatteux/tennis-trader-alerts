@@ -65,7 +65,8 @@ def run(dry_run: bool = False) -> None:
 
     bot = None
     if api is not None:
-        bot = BotMenu(api, rules, allowed_chats=env_csv("TELEGRAM_ALLOWED_CHATS"))
+        allowed = env_csv("TELEGRAM_ALLOWED_CHATS") or env_csv("TELEGRAM_CHAT_ID")
+        bot = BotMenu(api, rules, allowed_chats=allowed)
         bot.start()
 
     log.info(

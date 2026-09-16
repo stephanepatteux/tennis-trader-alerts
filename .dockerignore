@@ -1,0 +1,17 @@
+.git
+.github
+.cursor
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.env.*
+!.env.example
+tests
+docs
+scripts
+*.md
+data/rules.json
+data/*.tmp
